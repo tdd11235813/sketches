@@ -18,7 +18,7 @@ void show_gui() {
     vavg_v = avg_v();
     vavg_ekin = avg_ekin();
     vavg_temp = avg_temp();
-    temp = 2*_kb*ekin/3/np;
+    temp = 2.0/3.0*ekin/np*1.0/_kb;
     gamma = epot/ekin;
     frame = 0;
   }

@@ -1,5 +1,5 @@
 
-double restore = 1e-16; // [ C*V/m*s/m ], too soft, v still too high 
+double restore = 1e-19; // [ C*V/m*s/m ] 
 
 double cooling_linear(double vk, double vacc, double vmax) {
     double dv = vk - vmax;
@@ -22,10 +22,10 @@ void fcooling_linear(Particle[] ps, double vacc, double vmax) {
 void fcooling_russian(Particle[] ps) {
   double vmax = 0.0;
   for(Particle p : ps) { 
-    double vm = java.lang.Math.sqrt(p.vel[0]*p.vel[0]+p.vel[1]*p.vel[1]+p.vel[2]*p.vel[2]);
+    double vm = p.get_v();
     //if(vm>vmax)
     //  vm=vmax;
-    if(vm>1e+3) { // TODO:
+    if(vm>1) { // TODO:
       p.vel[0] = 0;
       p.vel[1] = 0;
       p.vel[2] = 0;

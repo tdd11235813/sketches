@@ -1,4 +1,9 @@
 
+double normal_dist(double mu, double sd) {
+  // Get a gaussian random number w/ mean of 0 and standard deviation of 1.0
+  double val = randomGaussian();
+  return ( val * sd ) + mu;
+}
 
 double dlen(double[] vec3d) {
   double distSqr = vec3d[0]*vec3d[0] + vec3d[1]*vec3d[1] + vec3d[2]*vec3d[2];

@@ -23,9 +23,9 @@ class Particle {
     for(int s=0; s<ntrajs; ++s)
       trajs[s] = new PVector(0,0,0);
 
-    pos[0] = normal_dist(0,1e-6);
-    pos[1] = normal_dist(0,1e-6);
-    pos[2] = normal_dist(0,1e-6);
+    pos[0] = normal_dist(0,ion_pos_sd);
+    pos[1] = normal_dist(0,ion_pos_sd);
+    pos[2] = normal_dist(0,ion_pos_sd);
     mass = particleMass;
     charge = particleCharge;
   }
@@ -60,7 +60,7 @@ class Particle {
 
   void update_trajectory() {
     PVector npos = new PVector((float)pos[0],(float)pos[1],(float)pos[2]);
-    if(ltrajs>0 && npos.dist(trajs[ltrajs-1])<5e-9)
+    if(ltrajs>0 && npos.dist(trajs[ltrajs-1])<5e-6)
       return; // do not add because distance to last point to small
     ++ltrajs;
     if(ltrajs>ntrajs) {

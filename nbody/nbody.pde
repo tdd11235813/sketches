@@ -5,32 +5,27 @@ import queasycam.*;
 // - velocity-verlet
 // - init temp -> v
 
-boolean show_dist_markers = false;
+boolean show_dist_markers = true;
 boolean show_trajectories = false;
 
 int np = 500;
 int ntrajs = 100;
 
-double ts                = 1e-12;//1e-14; // timestep in [s]
+double ts                = 5e-8;//1e-14; // timestep in [s]
 double particleMass      = 4.03594014E-27+2*9.1093826E-31;// M(Mg)/A =  4.03594014⋅10−27 kg + 2me
 // Mg(2+) Ion => 2e = 2x 1.6021766208(98)×10−19 C = 3.204353e-19 [C]
 double particleCharge    = 3.204353e-19; // [C] // 2*e
-double voltage           = 1; // [V]
+double voltage           = 5; // [V]
 double rmin              = 0; // position of potential minimum x=y=z=0
-double rNull             = 1e-6; // [m]
+double rNull             = 2e-2; // [m]
 double rNullSquared      = rNull*rNull; // [m]
 double _md_phys_c        = 299792458.;
 double _md_phys_emfactor = _md_phys_c*_md_phys_c*1E-7;
 double _md_phys_mu0      = PI*4.E-7;
 double _kb               = 1.38064852e-23; // [J K^-1], [m^2⋅kg/(s^2⋅K)]
 double eps0              = 1./(_md_phys_mu0*_md_phys_c*_md_phys_c);
-//double EPS2    = 0.000001;
+double ion_pos_sd        = 5e-4; // [m]
 
-double normal_dist(double mu, double sd) {
-  // Get a gaussian random number w/ mean of 0 and standard deviation of 1.0
-  double val = randomGaussian();
-  return ( val * sd ) + mu;
-}
 
 Particle[] ps = new Particle[np];
 
@@ -87,9 +82,9 @@ void rectGrid(int size, int tilesize, float y) {
 
 void draw(){
   // scale positions up
-  double sc = 2e7;
-  double dist_thr = 2.33e-7;
-  float sc_force = 25.0;
+  double sc = 2e4;
+  double dist_thr = 1.1e-4;
+  float sc_force = 25e+5;
   // -- forces --
   // init coulomb force to 0
   for(Particle p : ps) {
@@ -98,8 +93,8 @@ void draw(){
   fcoulomb(ps);
   fharmonic(ps);
   //fcooling_linear(ps,-1,1);
-  fcooling_linear(ps,-90,-5);
-  fcooling_linear(ps, 90, 5);
+  fcooling_linear(ps,-20,-10);
+  fcooling_linear(ps, 20, 10);
   //fcooling_russian(ps);
   // -- integrate and move --
   advance(ps,ts);
