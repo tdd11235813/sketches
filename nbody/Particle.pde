@@ -1,0 +1,81 @@
+
+class Particle {
+  double[] pos;
+  double[] vel = {0.0,0.0,0.0};
+  double[] hforce = {0.0,0.0,0.0};
+  double[] cforce = {0.0,0.0,0.0};
+  double[] lforce = {0.0,0.0,0.0};
+  double[] force = {0.0,0.0,0.0}; // total force
+  double[] acc = {0.0,0.0,0.0}; // acceleration
+  double mass;
+  double charge;
+  
+  float vhforce;
+  float vcforce;
+  float vlforce;
+  float vforce;
+  PVector[] trajs;
+  int ltrajs = 0; //current length of trajs
+  
+  Particle(double particleMass, double particleCharge) {
+    pos = new double[3];
+    trajs = new PVector[ntrajs];
+    for(int s=0; s<ntrajs; ++s)
+      trajs[s] = new PVector(0,0,0);
+
+    pos[0] = normal_dist(0,1e-6);
+    pos[1] = normal_dist(0,1e-6);
+    pos[2] = normal_dist(0,1e-6);
+    mass = particleMass;
+    charge = particleCharge;
+  }
+  
+  void calc_force() {
+    for(int k=0; k<3; ++k)
+      force[k] = hforce[k] + cforce[k] + lforce[k];
+    vhforce = (float)(1e16*java.lang.Math.sqrt(hforce[0]*hforce[0]+hforce[1]*hforce[1]+hforce[2]*hforce[2]));
+    vcforce = (float)(1e16*java.lang.Math.sqrt(cforce[0]*cforce[0]+cforce[1]*cforce[1]+cforce[2]*cforce[2]));
+    vlforce = (float)(1e16*java.lang.Math.sqrt(lforce[0]*lforce[0]+lforce[1]*lforce[1]+lforce[2]*lforce[2]));
+    vforce = vhforce + vcforce + vlforce;
+  }
+  
+  void calc_acc() {
+    for(int k=0; k<3; ++k)
+      acc[k] = force[k] / mass;
+  }
+  
+  void integrate(double ts) {
+    for(int k=0; k<3; ++k) {
+      vel[k] += ts*acc[k];
+      pos[k] += ts*vel[k];
+    }
+  }
+
+  double get_v() {
+    return dlen(vel);
+  }
+  double get_ekin() {
+    return 0.5*mass*get_v()*get_v(); // [J]
+  }
+
+  void update_trajectory() {
+    PVector npos = new PVector((float)pos[0],(float)pos[1],(float)pos[2]);
+    if(ltrajs>0 && npos.dist(trajs[ltrajs-1])<5e-9)
+      return; // do not add because distance to last point to small
+    ++ltrajs;
+    if(ltrajs>ntrajs) {
+      ltrajs=ntrajs;
+      for(int s=1;s<ntrajs;++s) {
+        trajs[s-1] = trajs[s]; 
+      }
+    }
+    trajs[ltrajs-1] = npos;
+  }
+  void reset_forces() {
+    for(int k=0; k<3; ++k) {
+      cforce[k] = 0;
+      hforce[k] = 0;
+      lforce[k] = 0;
+    }
+  }
+};
