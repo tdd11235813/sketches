@@ -25,10 +25,14 @@ void fcooling_russian(Particle[] ps) {
     double vm = p.get_v();
     //if(vm>vmax)
     //  vm=vmax;
-    if(vm>1) { // TODO:
+    if(vm>90) { // TODO:
       p.vel[0] = 0;
       p.vel[1] = 0;
       p.vel[2] = 0;
     }
   }
+}
+
+void fcooling(Particle[] ps, CoolingLaser laser) {
+  laser.cooling(ps);
 }

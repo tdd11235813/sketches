@@ -1,34 +1,37 @@
 import queasycam.*;
 
-// TODO
-// - init temp -> v
-
-boolean show_dist_markers = false;
+boolean show_dist_markers = true;
 boolean show_trajectories = false;
 boolean use_velocity_verlet = true; // velocity-verlet integrator
 double init_vel_by_random_temp = 10; // [K] // initial velocity by random temperature distribution
 
-int np = 500;
-int ntrajs = 100;
+int np                   = 500; // number of ions
+int ntrajs               = 100; // trajectory steps
+double ion_pos_sd        = 5e-4; // [m] initial position, sd for gaussian distribution
 
-double ts                = 5e-8;//1e-14; // timestep in [s]
-double particleMass      = 4.03594014E-27+2*9.1093826E-31;// M(Mg)/A =  4.03594014⋅10−27 kg + 2me
-// Mg(2+) Ion => 2e = 2x 1.6021766208(98)×10−19 C = 3.204353e-19 [C]
-double particleCharge    = 3.204353e-19; // [C] // 2*e
+double ts                = 8e-8; // timestep in [s]
+// using ^24 Mg^+ ions
+double particleMass      = 24*1.66053886E-27; // [C]
+double particleCharge    = 1.6021766209e-19;  // [C]
 double voltage           = 5; // [V]
 double rmin              = 0; // position of potential minimum x=y=z=0
-double rNull             = 2e-2; // [m]
+double rNull             = 1.5e-2; // [m]
 double rNullSquared      = rNull*rNull; // [m]
+
 double _md_phys_c        = 299792458.;
 double _md_phys_emfactor = _md_phys_c*_md_phys_c*1E-7;
 double _md_phys_mu0      = PI*4.E-7;
 double _kb               = 1.38064852e-23; // [J K^-1], [m^2⋅kg/(s^2⋅K)]
+double _md_phys_h        = 6.6260693E-34;
 double eps0              = 1./(_md_phys_mu0*_md_phys_c*_md_phys_c);
-double ion_pos_sd        = 5e-4; // [m]
 
 double ctime = 0;
 
 Particle[] ps = new Particle[np];
+
+// currently not used
+CoolingLaser laser1      = new CoolingLaser(280.0,  0.57735,0.57735,0.57735); // wavelength [nm], unit direction vector
+CoolingLaser laser2      = new CoolingLaser(280.0, -0.57735,-0.57735,-0.57735);
 
 QueasyCam cam;
 PMatrix3D baseMat;
@@ -83,20 +86,27 @@ void rectGrid(int size, int tilesize, float y) {
 
 void draw(){
   // scale positions up
-  double sc = 2e4;
-  double dist_thr = 1.1e-4;
+  double sc = 2.5e4;
+  double dist_thr = 6e-5;
   float sc_force = 25e+5;
   // -- forces --
-  // init coulomb force to 0
+  // init forces to 0
   for(Particle p : ps) {
     p.reset_forces();
   }
+  // Coulomb interaction
   fcoulomb(ps);
+  // harmonic oscillator
   fharmonic(ps);
-  //fcooling_linear(ps,-1,1);
+  // cooling
+  //fcooling_linear(ps,-1, 1);
+  //fcooling_linear(ps,-1,-1);
   fcooling_linear(ps,-20,-10);
   fcooling_linear(ps, 20, 10);
   //fcooling_russian(ps);
+  //fcooling(ps, laser1);
+  //fcooling(ps, laser2);
+  
   // -- integrate and move --
   // advance(ps,ts); // euler integrator
   advance_verlet(ps,ts); // velocity-verlet integrator

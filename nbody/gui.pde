@@ -35,11 +35,11 @@ void show_gui() {
   strokeWeight(1);
   fill(233,244,255,175);
   translate(width-100,100);
-  rect(-330,-35,375, 375);
+  rect(-330,-35,375, 435);
   noStroke();
   fill(50,50,100);
 
-  text("Ions (Mg2+): ", -toffset, 0); 
+  text("Ions (^24 Mg^+): ", -toffset, 0); 
    text(ps.length, -voffset, 0);
   translate(0,yoffset);
   text("Mass: ", -toffset, 0); 
@@ -64,8 +64,14 @@ void show_gui() {
   text("AvgEkin: ", -toffset, 0); text("[J]", 0, 0);
    text(String.format("%g",vavg_ekin), -voffset, 0);
   translate(0,yoffset);
+  text("AvgEkin: ", -toffset, 0); text("[eV]", 0, 0);
+   text(String.format("%g",vavg_ekin/(1.6021766208e-19)), -voffset, 0);
+  translate(0,yoffset);
   text("Ekin: ", -toffset, 0); text("[J]", 0, 0);
    text(String.format("%g",ekin), -voffset, 0);
+  translate(0,yoffset);
+  text("Ekin: ", -toffset, 0); text("[eV]", 0, 0);
+   text(String.format("%g",ekin/(1.6021766208e-19)), -voffset, 0);
   translate(0,yoffset);
   text("Epot: ", -toffset, 0); text("[J]", 0, 0);
    text(String.format("%g",epot), -voffset, 0);
