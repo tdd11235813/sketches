@@ -14,6 +14,10 @@ double ddist(double[] vec3d1, double[] vec3d2) {
     return dlen(diff);
 }
 
+double random_vel_temp(double mass, double temp) {
+  double sigma = java.lang.Math.sqrt(_kb * temp / mass);
+  return normal_dist(0., sigma);
+}
 // ---
 
 float avg_min_distance() {

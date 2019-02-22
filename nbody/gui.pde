@@ -50,6 +50,9 @@ void show_gui() {
   translate(0,yoffset);
   text("TimeStep: ", -toffset, 0); 
    text(String.format("%g",ts), -voffset, 0); text("[s]", 0, 0);
+  translate(0,yoffset);
+  text("Time: ", -toffset, 0); 
+   text(String.format("%g",ctime*1e6), -voffset, 0); text("[µs]", 0, 0);
 
   translate(0,1.5*yoffset);
   text("AvgMinDistance: ", -toffset, 0); text("[µm]", 0, 0);

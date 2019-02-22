@@ -1,12 +1,12 @@
 import queasycam.*;
 
 // TODO
-// - avg distance, energy sum, 
-// - velocity-verlet
 // - init temp -> v
 
-boolean show_dist_markers = true;
+boolean show_dist_markers = false;
 boolean show_trajectories = false;
+boolean use_velocity_verlet = true; // velocity-verlet integrator
+double init_vel_by_random_temp = 10; // [K] // initial velocity by random temperature distribution
 
 int np = 500;
 int ntrajs = 100;
@@ -26,6 +26,7 @@ double _kb               = 1.38064852e-23; // [J K^-1], [m^2⋅kg/(s^2⋅K)]
 double eps0              = 1./(_md_phys_mu0*_md_phys_c*_md_phys_c);
 double ion_pos_sd        = 5e-4; // [m]
 
+double ctime = 0;
 
 Particle[] ps = new Particle[np];
 
@@ -50,7 +51,7 @@ void setup(){
   cam.tilt = PI/8;
   println("Particles "+ps.length);
   for (int i = 0; i < ps.length; i++) {
-    ps[i] = new Particle(particleMass, particleCharge);
+    ps[i] = new Particle(particleMass, particleCharge, init_vel_by_random_temp);
   }
 }
 
@@ -97,8 +98,9 @@ void draw(){
   fcooling_linear(ps, 20, 10);
   //fcooling_russian(ps);
   // -- integrate and move --
-  advance(ps,ts);
-
+  // advance(ps,ts); // euler integrator
+  advance_verlet(ps,ts); // velocity-verlet integrator
+  ctime += ts;
   // -- render scene --
 
   background(250);

@@ -17,7 +17,7 @@ class Particle {
   PVector[] trajs;
   int ltrajs = 0; //current length of trajs
   
-  Particle(double particleMass, double particleCharge) {
+  Particle(double particleMass, double particleCharge, double temp) {
     pos = new double[3];
     trajs = new PVector[ntrajs];
     for(int s=0; s<ntrajs; ++s)
@@ -26,6 +26,9 @@ class Particle {
     pos[0] = normal_dist(0,ion_pos_sd);
     pos[1] = normal_dist(0,ion_pos_sd);
     pos[2] = normal_dist(0,ion_pos_sd);
+    vel[0] = random_vel_temp(particleMass, temp);
+    vel[1] = random_vel_temp(particleMass, temp);
+    vel[2] = random_vel_temp(particleMass, temp);
     mass = particleMass;
     charge = particleCharge;
   }
@@ -48,6 +51,18 @@ class Particle {
     for(int k=0; k<3; ++k) {
       vel[k] += ts*acc[k];
       pos[k] += ts*vel[k];
+    }
+  }
+  
+  void integrate_verlet1(double ts) {
+    for(int k=0; k<3; ++k) {
+      pos[k] += ts*(vel[k]+0.5*ts*acc[k]); // pos+=dt(v+a*dt2)
+      vel[k] += 0.5*ts*acc[k]; // v += a*dt2
+    }
+  }
+  void integrate_verlet2(double ts) {
+    for(int k=0; k<3; ++k) {
+      vel[k] += 0.5*ts*acc[k]; // v += a*dt2
     }
   }
 
