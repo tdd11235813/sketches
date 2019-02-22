@@ -86,9 +86,9 @@ void rectGrid(int size, int tilesize, float y) {
 
 void draw(){
   // scale positions up
-  double sc = 2.5e4;
+  double sc = 5e4;
   double dist_thr = 6e-5;
-  float sc_force = 25e+5;
+  float sc_force = 50e+5;
   // -- forces --
   // init forces to 0
   for(Particle p : ps) {
@@ -146,15 +146,15 @@ void draw(){
   
   if(show_trajectories) {
     pushMatrix();
-    scale((float)sc);
-    strokeWeight(1.0/(float)sc);
+    strokeWeight(1.0);
     beginShape(LINES);
     for(Particle p : ps) {
       p.update_trajectory();
       for(int s=1; s<p.ltrajs; ++s) {
-        PVector x0 = p.trajs[s-1];
-        PVector x1 = p.trajs[s];
-        stroke(0,230.0*s/ntrajs+25);
+        PVector x0 = PVector.mult(p.trajs[s-1],(float)sc);
+        PVector x1 = PVector.mult(p.trajs[s],(float)sc);
+        float z = PVector.dist(x1,cam.position);
+        stroke(0,(230.0*s/ntrajs+25)*max(1.0-0.9*pow(z/50,4),0.1));
         vertex(x0.x,x0.y,x0.z);
         vertex(x1.x,x1.y,x1.z);
       }
