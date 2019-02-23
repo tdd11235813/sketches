@@ -1,15 +1,15 @@
 import queasycam.*;
 
-boolean show_dist_markers = true;
+boolean show_dist_markers = false;
 boolean show_trajectories = false;
 boolean use_velocity_verlet = true; // velocity-verlet integrator
 double init_vel_by_random_temp = 10; // [K] // initial velocity by random temperature distribution
 
 int np                   = 500; // number of ions
 int ntrajs               = 100; // trajectory steps
-double ion_pos_sd        = 5e-4; // [m] initial position, sd for gaussian distribution
+double ion_pos_sd        = 5e-4; // [m] initial position range, sd for gaussian distribution
 
-double ts                = 8e-8; // timestep in [s]
+double ts                = 1e-7; // timestep in [s]
 // using ^24 Mg^+ ions
 double particleMass      = 24*1.66053886E-27; // [C]
 double particleCharge    = 1.6021766209e-19;  // [C]
@@ -29,7 +29,7 @@ double ctime = 0;
 
 Particle[] ps = new Particle[np];
 
-// currently not used
+// currently not used, because it is not working
 CoolingLaser laser1      = new CoolingLaser(280.0,  0.57735,0.57735,0.57735); // wavelength [nm], unit direction vector
 CoolingLaser laser2      = new CoolingLaser(280.0, -0.57735,-0.57735,-0.57735);
 
@@ -108,8 +108,12 @@ void draw(){
   //fcooling(ps, laser2);
   
   // -- integrate and move --
-  // advance(ps,ts); // euler integrator
-  advance_verlet(ps,ts); // velocity-verlet integrator
+  if(use_velocity_verlet) {
+    advance_verlet(ps,ts); // velocity-verlet integrator
+  } else {
+    advance(ps,ts); // euler integrator
+  }
+
   ctime += ts;
   // -- render scene --
 
