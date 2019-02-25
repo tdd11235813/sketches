@@ -33,34 +33,27 @@ class Particle {
     charge = particleCharge;
   }
   
-  void calc_force() {
-    for(int k=0; k<3; ++k)
+  void calc_force_and_acc() {
+    for(int k=0; k<3; ++k) {
       force[k] = hforce[k] + cforce[k] + lforce[k];
-    vhforce = (float)(1e16*java.lang.Math.sqrt(hforce[0]*hforce[0]+hforce[1]*hforce[1]+hforce[2]*hforce[2]));
-    vcforce = (float)(1e16*java.lang.Math.sqrt(cforce[0]*cforce[0]+cforce[1]*cforce[1]+cforce[2]*cforce[2]));
-    vlforce = (float)(1e16*java.lang.Math.sqrt(lforce[0]*lforce[0]+lforce[1]*lforce[1]+lforce[2]*lforce[2]));
-    vforce = vhforce + vcforce + vlforce;
+      acc[k]   = force[k] / mass;
+    }
   }
   
-  void calc_acc() {
-    for(int k=0; k<3; ++k)
-      acc[k] = force[k] / mass;
-  }
-  
-  void integrate(double ts) {
+  void integrate_euler(double ts) {
     for(int k=0; k<3; ++k) {
       vel[k] += ts*acc[k];
       pos[k] += ts*vel[k];
     }
   }
   
-  void integrate_verlet1(double ts) {
+  void integrate_verlet_part1(double ts) {
     for(int k=0; k<3; ++k) {
       pos[k] += ts*(vel[k]+0.5*ts*acc[k]); // pos+=dt(v+a*dt2)
       vel[k] += 0.5*ts*acc[k]; // v += a*dt2
     }
   }
-  void integrate_verlet2(double ts) {
+  void integrate_verlet_part2(double ts) {
     for(int k=0; k<3; ++k) {
       vel[k] += 0.5*ts*acc[k]; // v += a*dt2
     }

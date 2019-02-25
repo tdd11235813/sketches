@@ -47,8 +47,8 @@ void setup(){
   baseMat = getMatrix(baseMat);
   
   cam = new QueasyCam(this);
-  cam.speed = 0.1;              // default is 3
-  cam.sensitivity = 0.1;      // default is 2
+  cam.speed = 0.1;
+  cam.sensitivity = 0.1;
   cam.position = new PVector(20,-20,-40);
   cam.pan = 2*PI/3;
   cam.tilt = PI/8;
@@ -83,12 +83,7 @@ void rectGrid(int size, int tilesize, float y) {
 }
 
 // ---------------------------------
-
-void draw(){
-  // scale positions up
-  double sc = 5e4;
-  double dist_thr = 6e-5;
-  float sc_force = 50e+5;
+void calc_forces() {
   // -- forces --
   // init forces to 0
   for(Particle p : ps) {
@@ -107,14 +102,40 @@ void draw(){
   //fcooling(ps, laser1);
   //fcooling(ps, laser2);
   
+  // sum up partial forces in each particle
+  for(Particle p : ps) {
+    p.calc_force_and_acc();
+  }
+}
+
+void draw(){
+  // scale positions up
+  double sc = 5e4;
+  double dist_thr = 6e-5;
+  float sc_force = 50e+5;
+
+  calc_forces();
+
   // -- integrate and move --
   if(use_velocity_verlet) {
-    advance_verlet(ps,ts); // velocity-verlet integrator
+    // uses velocity-verlet integration
+    for(Particle p : ps) {
+      p.integrate_verlet_part1(ts);
+    }
+    calc_forces();
+    for(Particle p : ps) {
+      p.integrate_verlet_part2(ts);
+    }
   } else {
-    advance(ps,ts); // euler integrator
+    // uses euler integration
+    for(Particle p : ps) {
+      p.integrate_euler(ts);
+    }
   }
 
+  // for total time
   ctime += ts;
+
   // -- render scene --
 
   background(250);
@@ -184,15 +205,18 @@ void draw(){
   strokeWeight(8);
   beginShape(POINTS);
   for(Particle p : ps) {
+    float vhforce = (float)(1e16*dlen(p.hforce));
+    float vcforce = (float)(1e16*dlen(p.cforce));
+    float vlforce = (float)(1e16*dlen(p.lforce));
     PVector pos=new PVector(
         (float)(sc*p.pos[0]),
         (float)(sc*p.pos[1]),
         (float)(sc*p.pos[2]));
     float z = PVector.dist(pos,cam.position);
     stroke(
-      sc_force*p.vcforce/np, 
-      sc_force*p.vhforce/np, 
-      sc_force*p.vlforce/np, 
+      sc_force*vcforce/np,
+      sc_force*vhforce/np,
+      sc_force*vlforce/np,
       max(255-220.0*pow(z/50,4),25));
     vertex(pos.x,pos.y,pos.z);
   }

@@ -10,7 +10,6 @@ void fcoulomb(Particle[] ps) {
           double force_factor = _md_phys_emfactor * p.charge * p.charge / distCube;
           for(int k=0; k<3; ++k) {
             p.cforce[k] += force_factor * diff[k];
-            q.cforce[k] -= force_factor * diff[k];
           }
         }
       }
