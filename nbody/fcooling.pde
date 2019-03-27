@@ -1,12 +1,13 @@
-
+double p=0.1;
 double restore = 1e-19; // [ C*V/m*s/m ] 
 
 double cooling_linear(double vk, double vacc, double vmax) {
-    double dv = vk - vmax;
-    if(vacc <0.) return -restore * dv;
+    double dv = vk;// - vmax;
+    return -restore * dv;
+    /*if(vacc <0.) return -restore * dv;
     else if ((dv < 0.) && (dv > -vacc)) return +restore * (dv+vacc);
     else if ((dv > 0.) && (dv < +vacc)) return -restore * (dv-vacc);
-    else return 0.0;
+    else return 0.0;*/
 }
 
 // F = 0                   <=>        |v-vmax| > vacc                    //
