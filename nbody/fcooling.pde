@@ -1,22 +1,16 @@
-double p=0.1;
-double restore = 1e-19; // [ C*V/m*s/m ] 
 
-double cooling_linear(double vk, double vacc, double vmax) {
-    double dv = vk;// - vmax;
-    return -restore * dv;
-    /*if(vacc <0.) return -restore * dv;
-    else if ((dv < 0.) && (dv > -vacc)) return +restore * (dv+vacc);
-    else if ((dv > 0.) && (dv < +vacc)) return -restore * (dv-vacc);
-    else return 0.0;*/
+double cooling_linear(double vk, double ts, double mass) {
+    double p=0.1; // 10%
+    double dv = vk;
+    double ln1p = java.lang.Math.log(1+p)/java.lang.Math.log(java.lang.Math.exp(1.0));
+    double restore = -ln1p/ts * mass;  
+    return restore * dv;
 }
 
-// F = 0                   <=>        |v-vmax| > vacc                    //
-// F = - D * (v-vmax-vacc) <=>     0 < v-vmax < vacc                     //
-// F = + D * (v-vmax+vacc) <=> -vacc < v-vmax < 0                        //
-void fcooling_linear(Particle[] ps, double vacc, double vmax) {
+void fcooling_linear(Particle[] ps, double ts) {
   for(Particle p : ps) {
     for(int k=0; k<3; ++k)
-      p.lforce[k] += cooling_linear(p.vel[k], vacc, vmax);
+      p.lforce[k] += cooling_linear(p.vel[k], ts, p.mass);
   }
 }
 
@@ -32,8 +26,4 @@ void fcooling_russian(Particle[] ps) {
       p.vel[2] = 0;
     }
   }
-}
-
-void fcooling(Particle[] ps, CoolingLaser laser) {
-  laser.cooling(ps);
 }

@@ -6,6 +6,4 @@ Prototype of an N-Body simulation of ion coulomb crystals. Requires [queasycam](
 
 ![nbody01](.images/nbody01.png)
 
-After a while the oscillation of the ions can be observed due to the harmonic potential and Coulomb potential.
-
-![nbody02](.images/nbody02.png)
+The velocities are damped exponentially (the higher the velocity the exponentially higher the damping force).

@@ -9,7 +9,7 @@ int np                   = 500; // number of ions
 int ntrajs               = 100; // trajectory steps
 double ion_pos_sd        = 5e-4; // [m] initial position range, sd for gaussian distribution
 
-double ts                = 1e-7; // timestep in [s]
+double ts                = 5e-8; // timestep in [s]
 // using ^24 Mg^+ ions
 double particleMass      = 24*1.66053886E-27; // [C]
 double particleCharge    = 1.6021766209e-19;  // [C]
@@ -28,10 +28,6 @@ double eps0              = 1./(_md_phys_mu0*_md_phys_c*_md_phys_c);
 double ctime = 0;
 
 Particle[] ps = new Particle[np];
-
-// currently not used, because it is not working
-CoolingLaser laser1      = new CoolingLaser(280.0,  0.57735,0.57735,0.57735); // wavelength [nm], unit direction vector
-CoolingLaser laser2      = new CoolingLaser(280.0, -0.57735,-0.57735,-0.57735);
 
 QueasyCam cam;
 PMatrix3D baseMat;
@@ -94,13 +90,8 @@ void calc_forces() {
   // harmonic oscillator
   fharmonic(ps);
   // cooling
-  //fcooling_linear(ps,-1, 1);
-  //fcooling_linear(ps,-1,-1);
-  fcooling_linear(ps,-20,-10);
-  fcooling_linear(ps, 20, 10);
+  fcooling_linear(ps,ts);
   //fcooling_russian(ps);
-  //fcooling(ps, laser1);
-  //fcooling(ps, laser2);
   
   // sum up partial forces in each particle
   for(Particle p : ps) {
